@@ -6,8 +6,11 @@ dotenv.config();
 //routes
 import authRoutes from "./routes/authRoutes.js";
 import jobRoutes from "./routes/jobRoutes.js";
+import "express-async-errors";
 
 const app = express();
+
+connectDB();
 
 //Middleware
 import notFoundMiddleware from "./middleware/not-found.js";
@@ -28,15 +31,6 @@ app.use(errorHandlerMiddleware);
 
 const port = process.env.PORT || 5000;
 
-const start = async () => {
-  try {
-    await connectDB(process.env.MONGO_URI);
-    app.listen(port, () => {
-      console.log(`Server listening on port ${port} and connected to MongoDB`);
-    });
-  } catch (err) {
-    console.log(err);
-  }
-};
-
-start();
+app.listen(port, () => {
+  console.log(`Server listening on port ${port} `);
+});
