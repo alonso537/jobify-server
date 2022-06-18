@@ -17,6 +17,7 @@ connectDB();
 //Middleware
 import notFoundMiddleware from "./middleware/not-found.js";
 import errorHandlerMiddleware from "./middleware/error-handler.js";
+import auth from "./middleware/authenticateuser.js";
 
 app.use(cors());
 
@@ -31,7 +32,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/v1/auth", authRoutes);
-app.use("/api/v1/jobs", jobRoutes);
+app.use("/api/v1/jobs", auth, jobRoutes);
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
