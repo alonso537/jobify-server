@@ -1,5 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
+import cors from "cors";
 import connectDB from "./db/connect.js";
 dotenv.config();
 
@@ -16,11 +17,12 @@ connectDB();
 import notFoundMiddleware from "./middleware/not-found.js";
 import errorHandlerMiddleware from "./middleware/error-handler.js";
 
+app.use(cors());
 app.use(express.json());
 
 app.get("/", (req, res) => {
   //   throw new Error("Error");
-  res.send("Hello World!");
+  res.json({ msg: "Hello World!" });
 });
 
 app.use("/api/v1/auth", authRoutes);
