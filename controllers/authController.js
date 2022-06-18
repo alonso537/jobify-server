@@ -1,9 +1,11 @@
 import User from "../models/User.js";
 import { StatusCodes } from "http-status-codes";
+import bcript from "bcryptjs";
 import {
   BadRequestError,
   CustomAPIError,
   NotFoundError,
+  UnauthenticatedError,
 } from "../errors/index.js";
 
 const register = async (req, res, next) => {
@@ -25,7 +27,7 @@ const register = async (req, res, next) => {
       email,
       password,
     });
-    user.createJWT();
+    const token = user.createdJWT();
     res.status(StatusCodes.CREATED).json({
       user: {
         email: user.email,
@@ -42,7 +44,29 @@ const register = async (req, res, next) => {
 };
 
 const login = async (req, res) => {
-  res.send("Login ");
+  const { email, password } = req.body;
+  if (!email || !password) {
+    throw new BadRequestError("Please provide all required fields");
+  }
+  const user = await User.findOne({ email }).select("+password");
+  if (!user) {
+    throw new UnauthenticatedError("Invalid Credentials");
+  }
+
+  // console.log(user);
+
+  const isMatch = await user.comparePassword(password);
+  // console.log(isMatch);
+  if (!isMatch) {
+    throw new UnauthenticatedError("Invalid Credentials");
+  }
+  const token = user.createdJWT();
+  user.password = undefined;
+  res.status(StatusCodes.OK).json({
+    user,
+    token,
+    location: user.location,
+  });
 };
 
 const updateUser = async (req, res) => {
