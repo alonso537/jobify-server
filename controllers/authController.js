@@ -25,7 +25,17 @@ const register = async (req, res, next) => {
       email,
       password,
     });
-    res.status(StatusCodes.CREATED).json({ user });
+    user.createJWT();
+    res.status(StatusCodes.CREATED).json({
+      user: {
+        email: user.email,
+        lastName: user.lastName,
+        location: user.location,
+        name: user.name,
+      },
+      token,
+      location: user.location,
+    });
   } catch (error) {
     next(error);
   }
@@ -37,6 +47,7 @@ const login = async (req, res) => {
 
 const updateUser = async (req, res) => {
   res.send("update");
+  // User.fin
 };
 
 export { register, login, updateUser };
