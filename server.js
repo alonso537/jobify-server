@@ -2,6 +2,9 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import morgan from "morgan";
+import helmet from "helmet";
+import xss from "xss-clean";
+import ExpressMongoSanitize from "express-mongo-sanitize";
 import connectDB from "./db/connect.js";
 dotenv.config();
 
@@ -20,6 +23,10 @@ import errorHandlerMiddleware from "./middleware/error-handler.js";
 import auth from "./middleware/authenticateuser.js";
 
 app.use(cors());
+
+app.use(helmet());
+app.use(xss());
+app.use(ExpressMongoSanitize());
 
 if (process.env.NODE_ENV !== "production") {
   app.use(morgan("dev"));
