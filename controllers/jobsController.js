@@ -6,6 +6,7 @@ import {
   UnauthenticatedError,
 } from "../errors/index.js";
 import checkPermissions from "../utils/CheckPermissions.js";
+import mongoose from "mongoose";
 
 const createJob = async (req, res, next) => {
   try {
@@ -87,8 +88,40 @@ const updateJob = async (req, res, next) => {
   }
 };
 
-const showStats = async (req, res) => {
-  res.send("stats Job");
+const showStats = async (req, res, next) => {
+  try {
+    let stats = await Job.aggregate([
+      {
+        $match: {
+          createdBy: mongoose.Types.ObjectId(req.user.userId),
+        },
+      },
+      {
+        $group: {
+          _id: "$status",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    stats = stats.reduce((acc, curr) => {
+      const { _id: title, count } = curr;
+      acc[title] = count;
+      return acc;
+    }, {});
+
+    const defaultStats = {
+      pending: stats.pending || 0,
+      interview: stats.interview || 0,
+      declined: stats.declined || 0,
+    };
+
+    let monthyApplications = [];
+
+    res.status(StatusCodes.OK).json({ defaultStats, monthyApplications });
+  } catch (error) {
+    next(error);
+  }
 };
 
 export { createJob, deleteJob, getAllJobs, updateJob, showStats };
