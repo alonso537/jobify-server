@@ -11,9 +11,9 @@ import {
 
 router.route("/createJob").post(createJob);
 router.route("/").get(getAllJobs);
-router.route("/updateJob").patch(updateJob);
+router.route("/updateJob/:jobId").patch(updateJob);
 
 router.route("/stats").get(showStats);
-router.route("/:id").delete(deleteJob);
+router.route("/:jobId").delete(deleteJob);
 
 export default router;
